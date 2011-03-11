@@ -239,7 +239,7 @@ function btnAddNew(): Void {
 
 function btnDelete(): Void {
     var result:Boolean = Alert.question("Bạn có muốn xóa mặt hàng này?");
-    println('decíion == {result}');
+    println('decision of me == {result}');
 }
 /*FUNCTION AREA*/
 
