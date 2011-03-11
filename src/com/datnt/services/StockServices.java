@@ -19,6 +19,13 @@ public class StockServices {
 
         return daoLayer.saveForAdd(stockDTO);
     }
+    public int saveForUpdate(StockDTO EditingStockDTO,StockDTO stockDTO) {
+
+        StockDAO daoLayer = new StockDAO();
+
+        return daoLayer.saveForUpdate(EditingStockDTO,stockDTO);
+    }
+
 
     public static String[] FindAll() {
 

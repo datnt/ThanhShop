@@ -19,6 +19,65 @@ import java.sql.Date;
  */
 public class StockDAO {
 
+
+    public int saveForUpdate(StockDTO EditingStockDTO,StockDTO stock) {
+        int stockid = -1;
+
+        Connection conn = null;
+        PreparedStatement ptmt = null;
+        ResultSet rs = null;
+
+        try {
+            DatabaseUtils utils = new DatabaseUtils();
+            conn = utils.getConntection();
+            conn.setAutoCommit(false);
+
+            String sqlStock = "UPDATE STOCK_KEPING SET name=?,created_date=?,category_id=?,amount=?,price=?,sum_price=?  where id=?";
+
+            ptmt = conn.prepareStatement(sqlStock, Statement.RETURN_GENERATED_KEYS);
+            ptmt.setString(1, stock.getStockName());
+            ptmt.setDate(2, new Date(stock.getCr8_Date().getTime()));
+            ptmt.setInt(3, stock.getCategoryID());
+            ptmt.setInt(4, stock.getSoluong());
+            ptmt.setInt(5, stock.getDongia());
+            ptmt.setInt(6, stock.getSotien());
+
+            System.out.println("input id for update == "+EditingStockDTO.getStockID());
+            ptmt.setInt(7, EditingStockDTO.getStockID());
+
+            System.out.println("update string == "+ptmt.toString());
+
+            stockid = ptmt.executeUpdate();
+
+
+        } catch (Exception e) {
+            stockid = -1;
+            System.out.println("Update stock FAILED: " + e);
+        } finally {
+            try {
+                if (stockid > 0) {
+                    conn.commit();
+                } else {
+                    stockid = -1;
+                    conn.rollback();
+                }
+                conn.setAutoCommit(true);
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ptmt != null) {
+                    ptmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("FAILED WHEN COMMIT for Update: " + e);
+            }
+        }
+        System.out.println("update stockid == "+stockid);
+        return stockid;
+    }
     public int saveForAdd(StockDTO stock) {
         int stockid = 0;
 
@@ -159,6 +218,7 @@ public class StockDAO {
                 stockDTO.setSoluong(rs.getInt(StockDTO.AMOUNT));
                 stockDTO.setDongia(rs.getInt(StockDTO.PRICE));
                 stockDTO.setSotien(rs.getInt(StockDTO.SUM_PRICE));
+                stockDTO.setStockID(rs.getInt(StockDTO.ID));
             }
 
 

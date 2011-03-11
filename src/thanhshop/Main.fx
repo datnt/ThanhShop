@@ -25,6 +25,8 @@ import javafx.scene.control.ChoiceBox;
 import com.datnt.utils.DateTimeUtils;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import com.datnt.beanvalidator.StockValidator;
+import com.datnt.utils.Validator;
 
 /**
  * @author datnt
@@ -33,9 +35,7 @@ var ShowAll = true;
 var ViewNewScene = false;
 var Search = false;
 var Edit = false;
-
 var EditingStockDTO: StockDTO;
-
 var buttonViewNewScene = Button {
             text: "View New"
             action: btnViewAddNew
@@ -142,6 +142,7 @@ var txtTenhang = SwingTextField {
             columns: 10
             width: 100
             text: ""
+            editable: false
         };
 var hinhanh = Label {
             text: "Hình ảnh"
@@ -208,12 +209,17 @@ var listYears = ChoiceBox {
             width: 200
             height: 50
         }
-var btnSave = Button {
+var buttonSave = Button {
             text: "Save"
+            action: btnSave
         };
 var buttonReset = Button {
             text: "Reset"
             action: btnReset
+        };
+var strNote = "Thông báo: ";
+var thongbaoloi = Label {
+            text: bind strNote
         };
 /*END GUI component for Update Stock*/
 def stage = Stage {
@@ -279,6 +285,7 @@ def stage = Stage {
                                 layoutX: 10,
                                 spacing: 10,
                                 content: [
+                                    thongbaoloi,
                                     HBox {
                                         spacing: 20,
                                         content: [
@@ -337,7 +344,7 @@ def stage = Stage {
                                         spacing: 50,
                                         content: [
                                             buttonReset,
-                                            btnSave
+                                            buttonSave
                                         ]
                                     }
                                 ]
@@ -408,11 +415,20 @@ function btnChooseFile(): Void {
     var filePath: String = ChooseFile.OpenChooser();
     txtHinhanh.text = filePath;
 }
+
 function btnReset(): Void {
     LoadDataForEditForm(EditingStockDTO);
-    }
+}
+
+function btnSave(): Void {
+    SaveStock();
+}
+
 loadYears();/*Load yesr for EDIT form*/
+
 loadMonths();/*Load month for EDIT form*/
+
+
 function loadYears(): Void {
     var yearArray: String[] = DateTimeUtils.getYears();
     listYears.items = null;
@@ -439,6 +455,17 @@ var bindToYear = bind listYears.selectedIndex on replace {
 var bindToMonth = bind listMonths.selectedIndex on replace {
             loadDays();
         }
+var bindToSoluong = bind txtSoluong.text on replace {
+            if (txtSoluong.text != "" and txtDongia.text != "" and Validator.isNumber(txtSoluong.text) and Validator.isNumber(txtDongia.text)) {
+                txtSotien.text = "{Integer.valueOf(txtSoluong.text) * Integer.valueOf(txtDongia.text)}";
+            }
+
+        }
+var bindToDongia = bind txtDongia.text on replace {
+            if (txtSoluong.text != "" and txtDongia.text != "" and Validator.isNumber(txtSoluong.text) and Validator.isNumber(txtDongia.text)) {
+                txtSotien.text = "{Integer.valueOf(txtSoluong.text) * Integer.valueOf(txtDongia.text)}";
+            }
+        }
 
 function loadDays(): Void {
     //DateTimeUtils.getDays(listMonths.selectedIndex,listYears.selectedIndex);
@@ -454,6 +481,7 @@ function loadDays(): Void {
 
 /*FUNCTION AREA*/
 FindAllStock();
+
 function FindAllStock(): Void {
     var stockArray: String[] = StockServices.FindAll();
     listItems.items = null;
@@ -490,18 +518,33 @@ var bindToSelectedItem = bind listItems.selectedItem on replace {
 
             var stockDTO: StockDTO = StockServices.GetDetail(listItems.selectedItem as String);
             EditingStockDTO = stockDTO;/*This EditingStockDTO is used for RESET BUTTON*/
-
-            strCategory = "Loại hàng: {CategoryServices.GetCategoryName(stockDTO.getCategoryID())}";
-
-            var sdf: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            var strDay = sdf.format(stockDTO.getCr8_Date()) as String;
-
-            strDate = "Ngày nhập: {strDay}";
-            strAmount = "Số lượng: {stockDTO.getSoluong()}";
-            strPrice = "Đơn giá: {stockDTO.getDongia()}";
-            strSum = "Số tiền: {stockDTO.getSotien()}";
-            LoadDataForEditForm(stockDTO);
+            GetSelectedDetail(stockDTO);
+        //            EditingStockDTO = stockDTO;/*This EditingStockDTO is used for RESET BUTTON*/
+        //            strCategory = "Loại hàng: {CategoryServices.GetCategoryName(stockDTO.getCategoryID())}";
+        //
+        //            var sdf: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        //            var strDay = sdf.format(stockDTO.getCr8_Date()) as String;
+        //
+        //            strDate = "Ngày nhập: {strDay}";
+        //            strAmount = "Số lượng: {stockDTO.getSoluong()}";
+        //            strPrice = "Đơn giá: {stockDTO.getDongia()}";
+        //            strSum = "Số tiền: {stockDTO.getSotien()}";
+        //LoadDataForEditForm(stockDTO);
         }
+
+function GetSelectedDetail(stockDTO: StockDTO): Void {
+
+    strCategory = "Loại hàng: {CategoryServices.GetCategoryName(stockDTO.getCategoryID())}";
+
+    var sdf: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    var strDay = sdf.format(stockDTO.getCr8_Date()) as String;
+
+    strDate = "Ngày nhập: {strDay}";
+    strAmount = "Số lượng: {stockDTO.getSoluong()}";
+    strPrice = "Đơn giá: {stockDTO.getDongia()}";
+    strSum = "Số tiền: {stockDTO.getSotien()}";
+    LoadDataForEditForm(stockDTO);
+}
 
 function LoadDataForEditForm(stockDTO: StockDTO): Void {
     /*BEGIN prepare data for edit form*/
@@ -526,4 +569,41 @@ function LoadDataForEditForm(stockDTO: StockDTO): Void {
     listYears.select(Integer.valueOf(strYear) - 2000);
 
 /*END prepare data for edit form*/
+}
+
+function SaveStock(): Void {
+    var stockServices = new StockServices();
+
+    var stockDTO = new StockDTO();
+
+    if (Validator.isNumber(txtSoluong.text)) {
+        stockDTO.setSoluong(Integer.valueOf(txtSoluong.text));
+    }
+    if (Validator.isNumber(txtDongia.text)) {
+        stockDTO.setDongia(Integer.valueOf(txtDongia.text));
+    }
+    stockDTO.setSotien(Integer.valueOf(txtSotien.text));
+
+    stockDTO.setStockName(txtTenhang.text);
+
+    var cr8_date = DateTimeUtils.getDate(listDays.selectedIndex.intValue() + 1,
+            listMonths.selectedIndex.intValue() + 1,
+            listYears.selectedIndex.intValue() + 2000);
+
+    stockDTO.setCr8_Date(cr8_date);
+    stockDTO.setCategoryID(listCats.selectedIndex.intValue() + 1);
+
+    if (StockValidator.ValidateUpdateStockBean(stockDTO)) {
+        if (stockServices.saveForUpdate(EditingStockDTO, stockDTO) > 0) {
+            GetSelectedDetail(stockDTO);
+            strNote = "Thông báo: ĐÃ LƯU ĐƠN HÀNG";
+            println("Thông báo: ĐÃ LƯU ĐƠN HÀNG");
+        }
+
+    } else {
+        strNote = "Thông báo: MẶT HÀNG KHÔNG HỢP LỆ";
+        println("Thông báo: MẶT HÀNG KHÔNG HỢP LỆ");
+        return;
+    }
+
 }

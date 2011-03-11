@@ -302,7 +302,7 @@ public class AddNew extends Stage {
         stockDTO.setCr8_Date(cr8_date);
         stockDTO.setCategoryID(listCats.selectedIndex.intValue() + 1);
 
-        if (StockValidator.ValidateStockBean(stockDTO)) {
+        if (StockValidator.ValidateNewStockBean(stockDTO)) {
             stockServices.saveForAdd(stockDTO);
             strNote = "Thông báo: ĐÃ LƯU ĐƠN HÀNG";
         } else {

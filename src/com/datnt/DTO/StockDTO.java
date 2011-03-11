@@ -19,8 +19,17 @@ public class StockDTO {
     public static String AMOUNT="amount";
     public static String PRICE="price";
     public static String SUM_PRICE="sum_price";
+    public static String ID="id";
 
-    private String stockID = "";
+    private int stockID = -1;
+
+    public int getStockID() {
+        return stockID;
+    }
+
+    public void setStockID(int stockID) {
+        this.stockID = stockID;
+    }
     private String stockName = "";
     private Date cr8_Date;
     private int categoryID = -1;
@@ -67,14 +76,6 @@ public class StockDTO {
 
     public void setCr8_Date(Date cr8_Date) {
         this.cr8_Date = cr8_Date;
-    }
-
-    public String getStockID() {
-        return stockID;
-    }
-
-    public void setStockID(String stockID) {
-        this.stockID = stockID;
     }
 
     public String getStockName() {
