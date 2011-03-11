@@ -18,6 +18,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import com.datnt.DTO.StockDTO;
 import javafx.stage.Alert;
+import javafx.ext.swing.SwingTextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ChoiceBox;
+import com.datnt.utils.DateTimeUtils;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * @author datnt
@@ -26,6 +33,9 @@ var ShowAll = true;
 var ViewNewScene = false;
 var Search = false;
 var Edit = false;
+
+var EditingStockDTO: StockDTO;
+
 var buttonViewNewScene = Button {
             text: "View New"
             action: btnViewAddNew
@@ -124,6 +134,88 @@ var iImage = ImageView {
             layoutX: 200
             layoutY: 50
         }
+/*BEGIN GUI component for Update Stock*/
+var tenhang = Label {
+            text: "Tên Hàng"
+        };
+var txtTenhang = SwingTextField {
+            columns: 10
+            width: 100
+            text: ""
+        };
+var hinhanh = Label {
+            text: "Hình ảnh"
+        };
+var txtHinhanh = SwingTextField {
+            columns: 25
+            width: 100
+            text: "Hinh anh"
+        };
+var btnHinhanh = Button {
+            text: "Browse"
+            action: btnChooseFile
+        }
+var loaihang = Label {
+            text: "Loai hang"
+        };
+var listCats = ChoiceBox {
+            width: 200
+            height: 50
+        }
+var soluong = Label {
+            text: "So luong"
+        };
+var txtSoluong = SwingTextField {
+            columns: 10
+            width: 100
+            text: "0"
+        };
+var dongia = Label {
+            text: "Don gia"
+        };
+var txtDongia = SwingTextField {
+            columns: 10
+            width: 100
+            text: "0"
+        };
+var sotien = Label {
+            text: "So tien"
+        };
+var txtSotien = SwingTextField {
+            columns: 10
+            width: 100
+            text: "So tien"
+            editable: false
+        };
+var ngay = Label {
+            text: "Ngay"
+        };
+var listDays = ChoiceBox {
+            width: 200
+            height: 50
+        }
+var thang = Label {
+            text: "Thang"
+        };
+var listMonths = ChoiceBox {
+            width: 200
+            height: 50
+        }
+var nam = Label {
+            text: "Nam"
+        };
+var listYears = ChoiceBox {
+            width: 200
+            height: 50
+        }
+var btnSave = Button {
+            text: "Save"
+        };
+var buttonReset = Button {
+            text: "Reset"
+            action: btnReset
+        };
+/*END GUI component for Update Stock*/
 def stage = Stage {
             title: "Thanh Shop - View All"
             var scShowAll = Scene {
@@ -165,7 +257,8 @@ def stage = Stage {
                                 }
                                 x: 10, y: 30
                                 content: "HelloWorld from view add new"
-                            }//,
+                            },
+                            buttonShowAllofViewNew
                         //buttonViewEdit
                         ]
                     }
@@ -181,6 +274,75 @@ def stage = Stage {
                                 x: 10, y: 30
                                 content: "Chỉnh sửa đơn hàng"
                             },
+                            VBox {
+                                layoutY: 50,
+                                layoutX: 10,
+                                spacing: 10,
+                                content: [
+                                    HBox {
+                                        spacing: 20,
+                                        content: [
+                                            tenhang,
+                                            txtTenhang
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 10,
+                                        content: [
+                                            hinhanh,
+                                            txtHinhanh,
+                                            btnHinhanh
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            loaihang,
+                                            listCats
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            soluong,
+                                            txtSoluong
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            dongia,
+                                            txtDongia
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            sotien,
+                                            txtSotien
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 10,
+                                        content: [
+                                            ngay,
+                                            listDays,
+                                            thang,
+                                            listMonths,
+                                            nam,
+                                            listYears
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            buttonReset,
+                                            btnSave
+                                        ]
+                                    }
+                                ]
+                            }
+
                             buttonShowAllofEdit
                         ]
                     }
@@ -238,13 +400,60 @@ function btnAddNew(): Void {
 }
 
 function btnDelete(): Void {
-    var result:Boolean = Alert.question("Bạn có muốn xóa mặt hàng này?");
+    var result: Boolean = Alert.question("Bạn có muốn xóa mặt hàng này?");
     println('decision of me == {result}');
 }
+
+function btnChooseFile(): Void {
+    var filePath: String = ChooseFile.OpenChooser();
+    txtHinhanh.text = filePath;
+}
+function btnReset(): Void {
+    LoadDataForEditForm(EditingStockDTO);
+    }
+loadYears();/*Load yesr for EDIT form*/
+loadMonths();/*Load month for EDIT form*/
+function loadYears(): Void {
+    var yearArray: String[] = DateTimeUtils.getYears();
+    listYears.items = null;
+    for (y in yearArray) {
+        var entry: String = "{y}";
+        insert entry into listYears.items;
+    }
+    listYears.select(0);
+}
+
+function loadMonths(): Void {
+    var monthArray: String[] = DateTimeUtils.getMonths();
+    listMonths.items = null;
+    for (m in monthArray) {
+        var entry: String = "{m}";
+        insert entry into listMonths.items;
+    }
+    listMonths.select(0);
+}
+
+var bindToYear = bind listYears.selectedIndex on replace {
+            loadDays();
+        }
+var bindToMonth = bind listMonths.selectedIndex on replace {
+            loadDays();
+        }
+
+function loadDays(): Void {
+    //DateTimeUtils.getDays(listMonths.selectedIndex,listYears.selectedIndex);
+    println("val month index == {listMonths.selectedIndex} || year index == {listYears.selectedIndex}");
+    var dayArray: String[] = DateTimeUtils.getDays(listMonths.selectedIndex.intValue() + 1, listYears.selectedIndex.intValue() + 2000);
+    listDays.items = null;
+    for (d in dayArray) {
+        var entry: String = "{d}";
+        insert entry into listDays.items;
+    }
+    listDays.select(0);
+}
+
 /*FUNCTION AREA*/
-
 FindAllStock();
-
 function FindAllStock(): Void {
     var stockArray: String[] = StockServices.FindAll();
     listItems.items = null;
@@ -253,6 +462,16 @@ function FindAllStock(): Void {
         insert entry into listItems.items;
     }
     listItems.select(0);
+}
+
+function loadCategory(i: Integer): Void {
+    var cateArray: String[] = CategoryServices.LoadCategory();
+    listCats.items = null;
+    for (c in cateArray) {
+        var entry: String = "{c}";
+        insert entry into listCats.items;
+    }
+    listCats.select(i);
 }
 
 var bindToSelectedItem = bind listItems.selectedItem on replace {
@@ -270,10 +489,41 @@ var bindToSelectedItem = bind listItems.selectedItem on replace {
             //END: DEMO CODE
 
             var stockDTO: StockDTO = StockServices.GetDetail(listItems.selectedItem as String);
+            EditingStockDTO = stockDTO;/*This EditingStockDTO is used for RESET BUTTON*/
 
             strCategory = "Loại hàng: {CategoryServices.GetCategoryName(stockDTO.getCategoryID())}";
-            strDate = "Ngày nhập: {stockDTO.getCr8_Date()}";
+
+            var sdf: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            var strDay = sdf.format(stockDTO.getCr8_Date()) as String;
+
+            strDate = "Ngày nhập: {strDay}";
             strAmount = "Số lượng: {stockDTO.getSoluong()}";
             strPrice = "Đơn giá: {stockDTO.getDongia()}";
             strSum = "Số tiền: {stockDTO.getSotien()}";
+            LoadDataForEditForm(stockDTO);
         }
+
+function LoadDataForEditForm(stockDTO: StockDTO): Void {
+    /*BEGIN prepare data for edit form*/
+    txtTenhang.text = listItems.selectedItem as String;
+    loadCategory(stockDTO.getCategoryID() - 1);
+    txtSoluong.text = "{stockDTO.getSoluong()}";
+    txtDongia.text = "{stockDTO.getDongia()}";
+    txtSotien.text = "{stockDTO.getSotien()}";
+
+    var mydate: Date = stockDTO.getCr8_Date();
+    var sdf: SimpleDateFormat = new SimpleDateFormat("d");
+    var strDay = sdf.format(mydate) as String;
+
+    sdf = new SimpleDateFormat("M");
+    var strMonth = sdf.format(mydate) as String;
+
+    sdf = new SimpleDateFormat("yyyy");
+    var strYear = sdf.format(mydate) as String;
+
+    listDays.select(Integer.valueOf(strDay) - 1);
+    listMonths.select(Integer.valueOf(strMonth) - 1);
+    listYears.select(Integer.valueOf(strYear) - 2000);
+
+/*END prepare data for edit form*/
+}
