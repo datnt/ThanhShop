@@ -6,6 +6,7 @@ package com.datnt.DAO;
 
 import com.datnt.DTO.StockDTO;
 import com.datnt.utils.DatabaseUtils;
+import com.datnt.utils.JCopy;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -134,6 +135,7 @@ public class StockDAO {
                 System.out.println("FAILED WHEN COMMIT: " + e);
             }
         }
+        JCopy.perform("C:/Users/Public/Pictures/Sample Pictures/Koala.jpg", null);
 
         return stockid;
     }
