@@ -28,8 +28,7 @@ import java.text.SimpleDateFormat;
 import com.datnt.beanvalidator.StockValidator;
 import com.datnt.utils.Validator;
 
-/**
- * @author datnt
+/** * @author datnt
  */
 var ShowAll = true;
 var ViewNewScene = false;
@@ -222,6 +221,93 @@ var thongbaoloi = Label {
             text: bind strNote
         };
 /*END GUI component for Update Stock*/
+/*BEGIN GUI component for Scene - scViewAddNew */
+var strNoteAddNew = "Thông báo: ";
+var thongbaoloiAddNew = Label {
+            text: bind strNoteAddNew
+        };
+var txtTenhangAddNew = SwingTextField {
+            columns: 10
+            width: 100
+            text: ""
+        };
+var hinhanhAddNew = Label {
+            text: "Hình ảnh"
+        };
+var txtHinhanhAddNew = SwingTextField {
+            columns: 25
+            width: 100
+            text: "Hinh anh"
+        };
+var btnHinhanhAddNew = Button {
+            text: "Browse"
+            action: btnChooseFileAddNew
+        }
+var imageAddNew: Image;
+var iImageAddNew = ImageView {
+            image: bind imageAddNew
+            x: 10
+            y: 10
+            fitWidth: 125
+            fitHeight: 125
+            layoutX: 200
+            layoutY: 50
+        }
+var loaihangAddNew = Label {
+            text: "Loại Hàng"
+        };
+var listCatsAddNew = ChoiceBox {
+            width: 200
+            height: 50
+        }
+var soluongAddNew = Label {
+            text: "Số lượng"
+        };
+var txtSoluongAddNew = SwingTextField {
+            columns: 10
+            width: 100
+            text: "0"
+        };
+var dongiaAddNew = Label {
+            text: "Đơn giá"
+        };
+var txtDongiaAddNew = SwingTextField {
+            columns: 10
+            width: 100
+            text: "0"
+        };
+var sotienAddNew = Label {
+            text: "Số tiền"
+        };
+var txtSotienAddNew = SwingTextField {
+            columns: 10
+            width: 100
+            text: "0"
+            editable: false
+        };
+var ngayAddNew = Label {
+            text: "Ngay"
+        };
+var listDaysAddNew = ChoiceBox {
+            width: 200
+            height: 50
+        }
+var thangAddNew = Label {
+            text: "Thang"
+        };
+var listMonthsAddNew = ChoiceBox {
+            width: 200
+            height: 50
+        }
+var namAddNew = Label {
+            text: "Nam"
+        };
+var listYearsAddNew = ChoiceBox {
+            width: 200
+            height: 50
+        }
+
+/*END GUI component for Scene - scViewAddNew */
 def stage = Stage {
             title: "Thanh Shop - View All"
             var scShowAll = Scene {
@@ -256,13 +342,75 @@ def stage = Stage {
                         width: 1000,
                         height: 700,
                         content: [
-
                             Text {
                                 font: Font {
                                     size: 20
                                 }
                                 x: 10, y: 30
-                                content: "HelloWorld from view add new"
+                                content: "Tạo mới đơn hàng"
+                            },
+
+                            VBox {
+                                layoutY: 50,
+                                layoutX: 10,
+                                spacing: 10,
+                                content: [
+                                    HBox {
+                                        spacing: 20,
+                                        content: [
+                                            thongbaoloiAddNew,
+                                            txtTenhangAddNew
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 10,
+                                        content: [
+                                            hinhanhAddNew,
+                                            txtHinhanhAddNew,
+                                            btnHinhanhAddNew,
+                                            iImageAddNew
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            loaihangAddNew,
+                                            listCatsAddNew
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            soluongAddNew,
+                                            txtSoluongAddNew
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            dongiaAddNew,
+                                            txtDongiaAddNew
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            sotienAddNew,
+                                            txtSotienAddNew
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 10,
+                                        content: [
+                                            ngayAddNew,
+                                            listDaysAddNew,
+                                            thangAddNew,
+                                            listMonthsAddNew,
+                                            namAddNew,
+                                            listYearsAddNew
+                                        ]
+                                    }
+                                ]
                             },
                             buttonShowAllofViewNew
                         //buttonViewEdit
@@ -377,6 +525,9 @@ function btnViewAddNew(): Void {
     ViewNewScene = true;
     Search = false;
     Edit = false;
+    loadCategoryAddNew();
+    loadYearsAddNew();
+    loadMonthsAddNew();
 }
 
 function btnSearch(): Void {
@@ -607,3 +758,76 @@ function SaveStock(): Void {
     }
 
 }
+/*BEGIN function for Form Addnew*/
+
+function btnChooseFileAddNew(): Void {
+    var filePath: String = ChooseFile.OpenChooser();
+    txtHinhanhAddNew.text = filePath;
+    var strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
+    strUrl = "file:/{filePath}";
+    imageAddNew = Image {
+                url: strUrl;
+            }
+}
+
+function loadCategoryAddNew(): Void {
+    var cateArray: String[] = CategoryServices.LoadCategory();
+    listCatsAddNew.items = null;
+    for (c in cateArray) {
+        var entry: String = "{c}";
+        insert entry into listCatsAddNew.items;
+    }
+    listCatsAddNew.select(0);
+}
+
+var bindToSoluongAddNew = bind txtSoluongAddNew.text on replace {
+            if (txtSoluongAddNew.text != "" and txtDongiaAddNew.text != "" and Validator.isNumber(txtSoluongAddNew.text) and Validator.isNumber(txtDongiaAddNew.text)) {
+                txtSotienAddNew.text = "{Integer.valueOf(txtSoluongAddNew.text) * Integer.valueOf(txtDongiaAddNew.text)}";
+            }
+
+        }
+var bindToDongiaAddNew = bind txtDongiaAddNew.text on replace {
+            if (txtSoluongAddNew.text != "" and txtDongiaAddNew.text != "" and Validator.isNumber(txtSoluongAddNew.text) and Validator.isNumber(txtDongiaAddNew.text)) {
+                txtSotienAddNew.text = "{Integer.valueOf(txtSoluongAddNew.text) * Integer.valueOf(txtDongiaAddNew.text)}";
+            }
+        }
+
+function loadYearsAddNew(): Void {
+    var yearArray: String[] = DateTimeUtils.getYears();
+    listYearsAddNew.items = null;
+    for (y in yearArray) {
+        var entry: String = "{y}";
+        insert entry into listYearsAddNew.items;
+    }
+    listYearsAddNew.select(0);
+}
+
+function loadMonthsAddNew(): Void {
+    var monthArray: String[] = DateTimeUtils.getMonths();
+    listMonthsAddNew.items = null;
+    for (m in monthArray) {
+        var entry: String = "{m}";
+        insert entry into listMonthsAddNew.items;
+    }
+    listMonthsAddNew.select(0);
+}
+
+function loadDaysAddNew(): Void {
+    //DateTimeUtils.getDays(listMonths.selectedIndex,listYears.selectedIndex);
+    var dayArray: String[] = DateTimeUtils.getDays(listMonthsAddNew.selectedIndex.intValue() + 1, listYearsAddNew.selectedIndex.intValue() + 2000);
+    listDaysAddNew.items = null;
+    for (d in dayArray) {
+        var entry: String = "{d}";
+        insert entry into listDaysAddNew.items;
+    }
+    listDaysAddNew.select(0);
+}
+
+var bindToYearAddNew = bind listYearsAddNew.selectedIndex on replace {
+            loadDaysAddNew();
+        }
+var bindToMonthAddNew = bind listMonthsAddNew.selectedIndex on replace {
+            loadDaysAddNew();
+        }
+
+/*END function for Form Addnew*/
