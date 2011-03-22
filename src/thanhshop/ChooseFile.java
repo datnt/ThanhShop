@@ -24,12 +24,12 @@ public class ChooseFile {
         if (rVal == JFileChooser.APPROVE_OPTION) {
             System.out.println("Selected Filename == " + c.getSelectedFile().getName());
             System.out.println("dir path == " + c.getCurrentDirectory().toString());
-            fullPath = c.getCurrentDirectory().toString() + c.getSelectedFile().getName();
+            fullPath = c.getCurrentDirectory().toString() +"\\"+ c.getSelectedFile().getName();
         }
         if (rVal == JFileChooser.CANCEL_OPTION) {
             fullPath = "";
             System.out.println("You pressed cancel");
         }
-        return fullPath;
+        return fullPath.replace( '\\','/' );
     }
 }

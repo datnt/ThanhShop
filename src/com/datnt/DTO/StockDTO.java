@@ -20,6 +20,7 @@ public class StockDTO {
     public static String PRICE="price";
     public static String SUM_PRICE="sum_price";
     public static String ID="id";
+    
 
     private int stockID = -1;
 

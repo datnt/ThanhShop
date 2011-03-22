@@ -21,6 +21,8 @@ import com.datnt.utils.DateTimeUtils;
 import com.datnt.beanvalidator.StockValidator;
 import com.datnt.services.CategoryServices;
 import com.datnt.utils.Validator;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * @author datnt
@@ -58,6 +60,16 @@ public class AddNew extends Stage {
                 text: "Browse"
                 action: btnChooseFile
             }
+    var image: Image;
+    var iImage = ImageView {
+                image: bind image
+                x: 10
+                y: 10
+                fitWidth: 125
+                fitHeight: 125
+                layoutX: 200
+                layoutY: 50
+            }
     var loaihang = Label {
                 text: "Loai hang"
             };
@@ -88,7 +100,7 @@ public class AddNew extends Stage {
                 columns: 10
                 width: 100
                 text: "So tien"
-                editable:false
+                editable: false
             };
     var ngay = Label {
                 text: "Ngay"
@@ -136,7 +148,8 @@ public class AddNew extends Stage {
                                     content: [
                                         hinhanh,
                                         txtHinhanh,
-                                        btnHinhanh
+                                        btnHinhanh,
+                                        iImage
                                     ]
                                 },
                                 HBox {
@@ -273,6 +286,11 @@ public class AddNew extends Stage {
     function btnChooseFile(): Void {
         var filePath: String = ChooseFile.OpenChooser();
         txtHinhanh.text = filePath;
+        var strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
+        strUrl = "file:/{filePath}";
+        image = Image {
+                    url: strUrl;
+                }
     }
 
     function btnSaveAction(): Void {
