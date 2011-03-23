@@ -23,13 +23,17 @@ public class JCopy {
         FileChannel destination = null;
 
         try {
+            int tempIndex = strSource.split("/").length-1;
+            String fileName =strSource.split("/")[tempIndex];
+            String destpath = new File(".").getCanonicalPath().replace("\\", "/")+"/images"+"/"+fileName;
+            System.out.println("=============>>> "+destpath);
+            
             File sourceFile = new File(strSource);
-            File destFile = new File("D:/usr/tmp/img_thanhshop/tes.jpg");
+            File destFile = new File(destpath);
 
             if (!destFile.exists()) {
                 destFile.createNewFile();
             }
-
 
             source = new FileInputStream(sourceFile).getChannel();
             destination = new FileOutputStream(destFile).getChannel();
