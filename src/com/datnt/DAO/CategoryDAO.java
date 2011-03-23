@@ -87,6 +87,8 @@ public String GetCategoryName(int id) {
             ptmt = conn.prepareStatement(sqlCate);
             ptmt.setInt(1, id);
 
+            rs = ptmt.executeQuery();
+
             System.out.println("test id ========== "+id);
             while (rs.next()) {
                 System.out.println("name ========== "+name);

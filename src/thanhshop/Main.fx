@@ -226,6 +226,9 @@ var strNoteAddNew = "Thông báo: ";
 var thongbaoloiAddNew = Label {
             text: bind strNoteAddNew
         };
+var tenhangAddNew = Label {
+            text: "Tên Hàng"
+        };
 var txtTenhangAddNew = SwingTextField {
             columns: 10
             width: 100
@@ -306,7 +309,10 @@ var listYearsAddNew = ChoiceBox {
             width: 200
             height: 50
         }
-
+var btnSaveAddNew = Button {
+            text: "Save"
+            action: btnSaveActionAddNew
+        };
 /*END GUI component for Scene - scViewAddNew */
 def stage = Stage {
             title: "Thanh Shop - View All"
@@ -359,6 +365,12 @@ def stage = Stage {
                                         spacing: 20,
                                         content: [
                                             thongbaoloiAddNew,
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 20,
+                                        content: [
+                                            tenhangAddNew,
                                             txtTenhangAddNew
                                         ]
                                     },
@@ -408,6 +420,12 @@ def stage = Stage {
                                             listMonthsAddNew,
                                             namAddNew,
                                             listYearsAddNew
+                                        ]
+                                    },
+                                    HBox {
+                                        spacing: 50,
+                                        content: [
+                                            btnSaveAddNew
                                         ]
                                     }
                                 ]
@@ -830,4 +848,40 @@ var bindToMonthAddNew = bind listMonthsAddNew.selectedIndex on replace {
             loadDaysAddNew();
         }
 
+function btnSaveActionAddNew(): Void {
+    println(txtTenhangAddNew.text);
+    SaveStockAddNew();
+}
+
+function SaveStockAddNew(): Void {
+    var stockServices = new StockServices();
+
+    var stockDTO = new StockDTO();
+
+    if (Validator.isNumber(txtSoluongAddNew.text)) {
+        stockDTO.setSoluong(Integer.valueOf(txtSoluongAddNew.text));
+    }
+    if (Validator.isNumber(txtDongiaAddNew.text)) {
+        stockDTO.setDongia(Integer.valueOf(txtDongiaAddNew.text));
+    }
+    stockDTO.setSotien(Integer.valueOf(txtSotienAddNew.text));
+
+    stockDTO.setStockName(txtTenhangAddNew.text);
+
+    var cr8_date = DateTimeUtils.getDate(listDaysAddNew.selectedIndex.intValue() + 1,
+            listMonthsAddNew.selectedIndex.intValue() + 1,
+            listYearsAddNew.selectedIndex.intValue() + 2000);
+
+    stockDTO.setCr8_Date(cr8_date);
+    stockDTO.setCategoryID(listCatsAddNew.selectedIndex.intValue() + 1);
+
+    if (StockValidator.ValidateNewStockBean(stockDTO)) {
+        stockServices.saveForAdd(stockDTO);
+        strNoteAddNew = "Thông báo: ĐÃ LƯU ĐƠN HÀNG";
+    } else {
+        strNoteAddNew = "Thông báo: MẶT HÀNG KHÔNG HỢP LỆ";
+        return;
+    }
+
+}
 /*END function for Form Addnew*/
