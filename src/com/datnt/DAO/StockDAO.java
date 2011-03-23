@@ -20,8 +20,7 @@ import java.sql.Date;
  */
 public class StockDAO {
 
-
-    public int saveForUpdate(StockDTO EditingStockDTO,StockDTO stock) {
+    public int saveForUpdate(StockDTO EditingStockDTO, StockDTO stock) {
         int stockid = -1;
 
         Connection conn = null;
@@ -43,10 +42,10 @@ public class StockDAO {
             ptmt.setInt(5, stock.getDongia());
             ptmt.setInt(6, stock.getSotien());
 
-            System.out.println("input id for update == "+EditingStockDTO.getStockID());
+            System.out.println("input id for update == " + EditingStockDTO.getStockID());
             ptmt.setInt(7, EditingStockDTO.getStockID());
 
-            System.out.println("update string == "+ptmt.toString());
+            System.out.println("update string == " + ptmt.toString());
 
             stockid = ptmt.executeUpdate();
 
@@ -76,9 +75,10 @@ public class StockDAO {
                 System.out.println("FAILED WHEN COMMIT for Update: " + e);
             }
         }
-        System.out.println("update stockid == "+stockid);
+        System.out.println("update stockid == " + stockid);
         return stockid;
     }
+
     public int saveForAdd(StockDTO stock) {
         int stockid = 0;
 
@@ -138,6 +138,63 @@ public class StockDAO {
         JCopy.perform("C:/Users/Public/Pictures/Sample Pictures/Koala.jpg", null);
 
         return stockid;
+    }
+
+    public String[] listByCategory(int catId) {
+        Connection conn = null;
+        PreparedStatement ptmt = null;
+        ResultSet rs = null;
+        String[] listCate = null;
+
+        try {
+            DatabaseUtils utils = new DatabaseUtils();
+            conn = utils.getConntection();
+            conn.setAutoCommit(false);
+
+            String sqlCate = "SELECT * FROM STOCK_KEPING WHERE  STOCK_KEPING.CATEGORY_ID=? ORDER BY id ASC";
+            
+            ptmt = conn.prepareStatement(sqlCate);
+            ptmt.setInt(1, catId);
+
+            rs = ptmt.executeQuery();
+
+
+
+
+            int rowcount = 0;
+            if (rs.last()) {
+                rowcount = rs.getRow();
+                rs.beforeFirst();
+                // not rs.first() because the rs.next() below will move on,
+                //missing the first element
+            }
+            listCate = new String[rowcount];
+            int i = 0;
+            while (rs.next()) {
+                listCate[i] = rs.getString(StockDTO.NAME);
+                i++;
+            }
+
+
+        } catch (Exception e) {
+            System.out.println("Find Stock By Cateory FAILED: " + e);
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ptmt != null) {
+                    ptmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (Exception e) {
+                System.out.println("Find Stock By Cateory FAILED" + e.toString());
+            }
+        }
+
+        return listCate;
     }
 
     public String[] FindAll() {

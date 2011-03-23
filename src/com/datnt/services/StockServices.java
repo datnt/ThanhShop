@@ -33,6 +33,13 @@ public class StockServices {
 
         return daoLayer.FindAll();
     }
+    
+    public static String[] listByCategory(int categoryId) {
+
+        StockDAO daoLayer = new StockDAO();
+
+        return daoLayer.listByCategory(categoryId);
+    }    
 
     public static StockDTO GetDetail(String stockName) {
 

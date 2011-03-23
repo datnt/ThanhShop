@@ -78,7 +78,7 @@ var buttonDelete = Button {
             layoutY: 650
         }
 var listItems = ListView {
-            layoutY: 30
+            layoutY: 60
             layoutX: 10
         }
 var stockName = Label {
@@ -126,6 +126,12 @@ var iImage = ImageView {
             fitHeight: 125
             layoutX: 200
             layoutY: 50
+        }
+var listCatsShowAll = ChoiceBox {
+            width: 200
+            height: 50
+            layoutY: 30
+            layoutX: 10
         }
 /*BEGIN GUI component for Update Stock*/
 var tenhang = Label {
@@ -334,6 +340,7 @@ def stage = Stage {
                             buttonSearch,
                             buttonViewNewScene,
                             listItems,
+                            listCatsShowAll,
                         ]
                     }
 
@@ -564,7 +571,6 @@ function btnShowAll(): Void {
 
 function btnDelete(): Void {
     var result: Boolean = Alert.question("Bạn có muốn xóa mặt hàng này?");
-    println('decision of me == {result}');
 }
 
 function btnChooseFile(): Void {
@@ -625,7 +631,6 @@ var bindToDongia = bind txtDongia.text on replace {
 
 function loadDays(): Void {
     //DateTimeUtils.getDays(listMonths.selectedIndex,listYears.selectedIndex);
-    println("val month index == {listMonths.selectedIndex} || year index == {listYears.selectedIndex}");
     var dayArray: String[] = DateTimeUtils.getDays(listMonths.selectedIndex.intValue() + 1, listYears.selectedIndex.intValue() + 2000);
     listDays.items = null;
     for (d in dayArray) {
@@ -637,6 +642,8 @@ function loadDays(): Void {
 
 /*FUNCTION AREA*/
 FindAllStock();
+loadCategoryShowAll();/*Load category for scene ViewAll*/
+
 
 function FindAllStock(): Void {
     var stockArray: String[] = StockServices.FindAll();
@@ -646,6 +653,17 @@ function FindAllStock(): Void {
         insert entry into listItems.items;
     }
     listItems.select(0);
+}
+
+function loadCategoryShowAll(): Void {
+    var cateArray: String[] = CategoryServices.LoadCategory();
+    listCatsShowAll.items = null;
+    var count = 0;
+    for (c in cateArray) {
+        var entry: String = "{c}";
+        insert entry into listCatsShowAll.items;
+        count = count + 1;
+    }
 }
 
 function loadCategory(i: Integer): Void {
@@ -659,37 +677,39 @@ function loadCategory(i: Integer): Void {
 }
 
 var bindToSelectedItem = bind listItems.selectedItem on replace {
-            //BEGIN: DEMO CODE
-            image = Image {
-                        url: strUrl;
-                    }
-            strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
-
-            if (listItems.selectedIndex > 5) {
-                strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Hydrangeas.jpg";
-            } else {
+            if (listItems.selectedItem != null) {
+                //BEGIN: DEMO CODE
+                image = Image {
+                            url: strUrl;
+                        }
                 strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
-            }
-            //END: DEMO CODE
 
-            var stockDTO: StockDTO = StockServices.GetDetail(listItems.selectedItem as String);
-            EditingStockDTO = stockDTO;/*This EditingStockDTO is used for RESET BUTTON*/
-            GetSelectedDetail(stockDTO);
-        //            EditingStockDTO = stockDTO;/*This EditingStockDTO is used for RESET BUTTON*/
-        //            strCategory = "Loại hàng: {CategoryServices.GetCategoryName(stockDTO.getCategoryID())}";
-        //
-        //            var sdf: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        //            var strDay = sdf.format(stockDTO.getCr8_Date()) as String;
-        //
-        //            strDate = "Ngày nhập: {strDay}";
-        //            strAmount = "Số lượng: {stockDTO.getSoluong()}";
-        //            strPrice = "Đơn giá: {stockDTO.getDongia()}";
-        //            strSum = "Số tiền: {stockDTO.getSotien()}";
-        //LoadDataForEditForm(stockDTO);
+                if (listItems.selectedIndex > 5) {
+                    strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Hydrangeas.jpg";
+                } else {
+                    strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
+                }
+                //END: DEMO CODE
+
+                var stockDTO: StockDTO = StockServices.GetDetail(listItems.selectedItem as String);
+                EditingStockDTO = stockDTO;/*This EditingStockDTO is used for RESET BUTTON*/
+                GetSelectedDetail(stockDTO);
+            //            EditingStockDTO = stockDTO;/*This EditingStockDTO is used for RESET BUTTON*/
+            //            strCategory = "Loại hàng: {CategoryServices.GetCategoryName(stockDTO.getCategoryID())}";
+            //
+            //            var sdf: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            //            var strDay = sdf.format(stockDTO.getCr8_Date()) as String;
+            //
+            //            strDate = "Ngày nhập: {strDay}";
+            //            strAmount = "Số lượng: {stockDTO.getSoluong()}";
+            //            strPrice = "Đơn giá: {stockDTO.getDongia()}";
+            //            strSum = "Số tiền: {stockDTO.getSotien()}";
+            //LoadDataForEditForm(stockDTO);
+            }
+
         }
 
 function GetSelectedDetail(stockDTO: StockDTO): Void {
-
     strCategory = "Loại hàng: {CategoryServices.GetCategoryName(stockDTO.getCategoryID())}";
 
     var sdf: SimpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -871,4 +891,19 @@ function SaveStockAddNew(): Void {
     }
 
 }
+
+/*DATNT NOTE: This action will be called dynamically when application first run*/
+var bindCategoryShowAll = bind listCatsShowAll.selectedItem on replace {
+            if (listCatsShowAll.selectedIndex > -1) {
+                var stockServices = new StockServices();
+                var stockArray: String[] = stockServices.listByCategory(listCatsShowAll.selectedIndex+1);
+
+                listItems.items = null;
+                for (c in stockArray) {
+                    var entry: String = "{c}";
+                    insert entry into listItems.items;
+                }
+            }
+
+        }
 /*END function for Form Addnew*/
