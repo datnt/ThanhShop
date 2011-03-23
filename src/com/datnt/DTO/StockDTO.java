@@ -20,10 +20,26 @@ public class StockDTO {
     public static String PRICE="price";
     public static String SUM_PRICE="sum_price";
     public static String ID="id";
+    public static String FILENAME="filename";
     
 
     private int stockID = -1;
+    private String stockName = "";
+    private Date cr8_Date;
+    private int categoryID = -1;
+    private int soluong = -1;
+    private int dongia = -1;
+    private int sotien = -1;
+    private String fileName = "";
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+    
     public int getStockID() {
         return stockID;
     }
@@ -31,12 +47,7 @@ public class StockDTO {
     public void setStockID(int stockID) {
         this.stockID = stockID;
     }
-    private String stockName = "";
-    private Date cr8_Date;
-    private int categoryID = -1;
-    private int soluong = -1;
-    private int dongia = -1;
-    private int sotien = -1;
+
 
     public int getSotien() {
         return sotien;

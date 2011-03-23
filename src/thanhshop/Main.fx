@@ -149,7 +149,7 @@ var hinhanh = Label {
 var txtHinhanh = SwingTextField {
             columns: 25
             width: 100
-            text: "Hinh anh"
+            text: ""
         };
 var btnHinhanh = Button {
             text: "Browse"
@@ -240,7 +240,7 @@ var hinhanhAddNew = Label {
 var txtHinhanhAddNew = SwingTextField {
             columns: 25
             width: 100
-            text: "Hinh anh"
+            text: ""
         };
 var btnHinhanhAddNew = Button {
             text: "Browse"
@@ -679,16 +679,16 @@ function loadCategory(i: Integer): Void {
 var bindToSelectedItem = bind listItems.selectedItem on replace {
             if (listItems.selectedItem != null) {
                 //BEGIN: DEMO CODE
-                image = Image {
-                            url: strUrl;
-                        }
-                strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
-
-                if (listItems.selectedIndex > 5) {
-                    strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Hydrangeas.jpg";
-                } else {
-                    strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
-                }
+                //                image = Image {
+                //                            url: strUrl;
+                //                        }
+                //                strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
+                //
+                //                if (listItems.selectedIndex > 5) {
+                //                    strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Hydrangeas.jpg";
+                //                } else {
+                //                    strUrl = "file:/C:/Users/Public/Pictures/Sample Pictures/Desert.jpg";
+                //                }
                 //END: DEMO CODE
 
                 var stockDTO: StockDTO = StockServices.GetDetail(listItems.selectedItem as String);
@@ -719,6 +719,15 @@ function GetSelectedDetail(stockDTO: StockDTO): Void {
     strAmount = "Số lượng: {stockDTO.getSoluong()}";
     strPrice = "Đơn giá: {stockDTO.getDongia()}";
     strSum = "Số tiền: {stockDTO.getSotien()}";
+
+    if (not "".equals(stockDTO.getFileName())) {
+        strUrl = "file:/{com.datnt.utils.JCopy.GetSystemPath()}{stockDTO.getFileName()}";
+    } else {
+        strUrl = "file:/{com.datnt.utils.JCopy.GetSystemPath()}no_image.jpg";
+    }
+    image = Image {
+                url: strUrl;
+            }
     LoadDataForEditForm(stockDTO);
 }
 
@@ -882,6 +891,8 @@ function SaveStockAddNew(): Void {
     stockDTO.setCr8_Date(cr8_date);
     stockDTO.setCategoryID(listCatsAddNew.selectedIndex.intValue() + 1);
 
+    stockDTO.setFileName(txtHinhanhAddNew.text);
+
     if (StockValidator.ValidateNewStockBean(stockDTO)) {
         stockServices.saveForAdd(stockDTO);
         strNoteAddNew = "Thông báo: ĐÃ LƯU ĐƠN HÀNG";
@@ -896,7 +907,7 @@ function SaveStockAddNew(): Void {
 var bindCategoryShowAll = bind listCatsShowAll.selectedItem on replace {
             if (listCatsShowAll.selectedIndex > -1) {
                 var stockServices = new StockServices();
-                var stockArray: String[] = stockServices.listByCategory(listCatsShowAll.selectedIndex+1);
+                var stockArray: String[] = stockServices.listByCategory(listCatsShowAll.selectedIndex + 1);
 
                 listItems.items = null;
                 for (c in stockArray) {

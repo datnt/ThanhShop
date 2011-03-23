@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.util.Calendar;
 
 /**
  *
@@ -18,16 +19,15 @@ import java.nio.channels.FileChannel;
  */
 public class JCopy {
 
-    public static void perform(String strSource, String strDest) {
+    public static String perform(String strSource) {
         FileChannel source = null;
         FileChannel destination = null;
 
+        String destpath = GetNewFilePath(strSource);
+
         try {
-            int tempIndex = strSource.split("/").length-1;
-            String fileName =strSource.split("/")[tempIndex];
-            String destpath = new File(".").getCanonicalPath().replace("\\", "/")+"/images"+"/"+fileName;
-            System.out.println("=============>>> "+destpath);
-            
+
+
             File sourceFile = new File(strSource);
             File destFile = new File(destpath);
 
@@ -42,13 +42,46 @@ public class JCopy {
             System.out.println("Loi khi dang chep file " + e);
         } finally {
             if (source != null) {
-                try{source.close();}catch(Exception e){}
-                
+                try {
+                    source.close();
+                } catch (Exception e) {
+                }
+
             }
             if (destination != null) {
-                try{destination.close();}catch(Exception e){}
-                
+                try {
+                    destination.close();
+                } catch (Exception e) {
+                }
+
             }
         }
+        return destpath;
+    }
+
+    public static String GetNewFilePath(String filepath) {
+        int tempIndex = filepath.split("/").length - 1;
+        String fileName = filepath.split("/")[tempIndex];
+        try {
+            filepath = new File(".").getCanonicalPath().replace("\\", "/") + "/images" + "/";
+
+            Calendar now = Calendar.getInstance();
+            filepath = filepath + now.getTimeInMillis() + "_" + fileName;
+        } catch (Exception e) {
+            System.out.println("Loi khi convert file path: " + e);
+        }
+
+        return filepath;
+
+    }
+
+    public static String GetSystemPath() {
+        String filepath = "";
+        try {
+            filepath = new File(".").getCanonicalPath().replace("\\", "/") + "/images" + "/";
+        } catch (Exception e) {
+            System.out.println("Error when GetSystemPath");
+        }
+        return filepath;
     }
 }

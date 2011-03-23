@@ -92,7 +92,7 @@ public class StockDAO {
             conn = utils.getConntection();
             conn.setAutoCommit(false);
 
-            String sqlStock = "INSERT INTO STOCK_KEPING(name,created_date,category_id,amount,price,sum_price) VALUES(?,?,?,?,?,?)";
+            String sqlStock = "INSERT INTO STOCK_KEPING(name,created_date,category_id,amount,price,sum_price,filename) VALUES(?,?,?,?,?,?,?)";
             ptmt = conn.prepareStatement(sqlStock, Statement.RETURN_GENERATED_KEYS);
             ptmt.setString(1, stock.getStockName());
             ptmt.setDate(2, new Date(stock.getCr8_Date().getTime()));
@@ -100,6 +100,15 @@ public class StockDAO {
             ptmt.setInt(4, stock.getSoluong());
             ptmt.setInt(5, stock.getDongia());
             ptmt.setInt(6, stock.getSotien());
+
+            if (!"".equals(stock.getFileName())) {
+                String strTemp = JCopy.perform(stock.getFileName());
+                stock.setFileName(strTemp.split("/")[strTemp.split("/").length - 1]);
+            }
+            
+            ptmt.setString(7, stock.getFileName());
+
+            System.out.println("FFFFFFFFFFFFFFFFFFFFname == " + stock.getFileName());
 
             if (ptmt.executeUpdate() > 0) {
                 ResultSet rsAuto = ptmt.getGeneratedKeys();
@@ -135,7 +144,7 @@ public class StockDAO {
                 System.out.println("FAILED WHEN COMMIT: " + e);
             }
         }
-        JCopy.perform("C:/Users/Public/Pictures/Sample Pictures/Koala.jpg", null);
+
 
         return stockid;
     }
@@ -152,7 +161,7 @@ public class StockDAO {
             conn.setAutoCommit(false);
 
             String sqlCate = "SELECT * FROM STOCK_KEPING WHERE  STOCK_KEPING.CATEGORY_ID=? ORDER BY id ASC";
-            
+
             ptmt = conn.prepareStatement(sqlCate);
             ptmt.setInt(1, catId);
 
@@ -278,6 +287,9 @@ public class StockDAO {
                 stockDTO.setDongia(rs.getInt(StockDTO.PRICE));
                 stockDTO.setSotien(rs.getInt(StockDTO.SUM_PRICE));
                 stockDTO.setStockID(rs.getInt(StockDTO.ID));
+                stockDTO.setFileName(rs.getString(StockDTO.FILENAME));
+                if (stockDTO.getFileName() == null)
+                    stockDTO.setFileName("");
             }
 
 
