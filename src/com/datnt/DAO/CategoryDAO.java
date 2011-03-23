@@ -89,11 +89,8 @@ public String GetCategoryName(int id) {
 
             rs = ptmt.executeQuery();
 
-            System.out.println("test id ========== "+id);
             while (rs.next()) {
-                System.out.println("name ========== "+name);
                 name = rs.getString(CategoryDTO.NAME);
-                System.out.println("name ========== "+name);
             }
 
 

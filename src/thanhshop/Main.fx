@@ -71,12 +71,6 @@ var buttonShowAllofViewNew = Button {
             layoutX: 900
             layoutY: 650
         }
-var buttonNew = Button {
-            text: "Thêm mới"
-            action: btnAddNew
-            layoutX: 820
-            layoutY: 650
-        }
 var buttonDelete = Button {
             text: "Xóa   "
             action: btnDelete
@@ -335,7 +329,6 @@ def stage = Stage {
                             price,
                             sumP,
                             date,
-                            buttonNew,
                             buttonDelete,
                             buttonViewEdit,
                             buttonSearch,
@@ -567,12 +560,6 @@ function btnShowAll(): Void {
     ViewNewScene = false;
     Search = false;
     Edit = false;
-}
-
-function btnAddNew(): Void {
-    var formNew: AddNew = AddNew {
-                style: StageStyle.DECORATED
-            }
 }
 
 function btnDelete(): Void {
