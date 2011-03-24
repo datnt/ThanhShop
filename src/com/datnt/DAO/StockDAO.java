@@ -7,6 +7,7 @@ package com.datnt.DAO;
 import com.datnt.DTO.StockDTO;
 import com.datnt.utils.DatabaseUtils;
 import com.datnt.utils.JCopy;
+import com.datnt.utils.JDelete;
 import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,7 +21,17 @@ import java.sql.Date;
  */
 public class StockDAO {
 
-    public int saveForUpdate(StockDTO EditingStockDTO, StockDTO stock) {
+    public void DeleteOldFile(String stockName) {
+
+        StockDTO stockDTO = GetDetail(stockName);
+        if (stockDTO.getFileName() != null && stockDTO.getFileName() != "") {
+            JDelete.deletefile(stockDTO.getFileName());
+        }
+
+        //select old file name from database
+    }
+
+    public int saveForUpdate(StockDTO EditingStockDTO/*==OLD stock*/, StockDTO stock) {
         int stockid = -1;
 
         Connection conn = null;
@@ -32,7 +43,9 @@ public class StockDAO {
             conn = utils.getConntection();
             conn.setAutoCommit(false);
 
-            String sqlStock = "UPDATE STOCK_KEPING SET name=?,created_date=?,category_id=?,amount=?,price=?,sum_price=?  where id=?";
+
+
+            String sqlStock = "UPDATE STOCK_KEPING SET name=?,created_date=?,category_id=?,amount=?,price=?,sum_price=?,filename=? where id=?";
 
             ptmt = conn.prepareStatement(sqlStock, Statement.RETURN_GENERATED_KEYS);
             ptmt.setString(1, stock.getStockName());
@@ -41,14 +54,22 @@ public class StockDAO {
             ptmt.setInt(4, stock.getSoluong());
             ptmt.setInt(5, stock.getDongia());
             ptmt.setInt(6, stock.getSotien());
+            ptmt.setInt(8, EditingStockDTO.getStockID());
 
-            System.out.println("input id for update == " + EditingStockDTO.getStockID());
-            ptmt.setInt(7, EditingStockDTO.getStockID());
 
-            System.out.println("update string == " + ptmt.toString());
+            if (!"".equals(stock.getFileName())) {
+                String strTemp = JCopy.perform(stock.getFileName());
+                DeleteOldFile(EditingStockDTO.getStockName());
+
+                stock.setFileName(strTemp.split("/")[strTemp.split("/").length - 1]);
+                ptmt.setString(7, stock.getFileName());
+            }else {
+                ptmt.setString(7, EditingStockDTO.getFileName());/*Set the OLD NAME, because there is no new file*/
+            }
+
+            
 
             stockid = ptmt.executeUpdate();
-
 
         } catch (Exception e) {
             stockid = -1;
@@ -105,10 +126,8 @@ public class StockDAO {
                 String strTemp = JCopy.perform(stock.getFileName());
                 stock.setFileName(strTemp.split("/")[strTemp.split("/").length - 1]);
             }
-            
-            ptmt.setString(7, stock.getFileName());
 
-            System.out.println("FFFFFFFFFFFFFFFFFFFFname == " + stock.getFileName());
+            ptmt.setString(7, stock.getFileName());
 
             if (ptmt.executeUpdate() > 0) {
                 ResultSet rsAuto = ptmt.getGeneratedKeys();
@@ -288,8 +307,9 @@ public class StockDAO {
                 stockDTO.setSotien(rs.getInt(StockDTO.SUM_PRICE));
                 stockDTO.setStockID(rs.getInt(StockDTO.ID));
                 stockDTO.setFileName(rs.getString(StockDTO.FILENAME));
-                if (stockDTO.getFileName() == null)
+                if (stockDTO.getFileName() == null) {
                     stockDTO.setFileName("");
+                }
             }
 
 

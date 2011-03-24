@@ -36,13 +36,13 @@ var Search = false;
 var Edit = false;
 var EditingStockDTO: StockDTO;
 var buttonViewNewScene = Button {
-            text: "View New"
+            text: "Thêm mới"
             action: btnViewAddNew
             layoutX: 655
             layoutY: 650
         }
 var buttonSearch = Button {
-            text: "Show Search"
+            text: "Tìm kiếm"
             action: btnSearch
             layoutX: 730
             layoutY: 650
@@ -143,18 +143,31 @@ var txtTenhang = SwingTextField {
             text: ""
             editable: false
         };
-var hinhanh = Label {
+var hinhanh = Label { /*For edit form*/
             text: "Hình ảnh"
         };
-var txtHinhanh = SwingTextField {
+var txtHinhanh = SwingTextField {/* for edit form*/
             columns: 25
             width: 100
             text: ""
         };
-var btnHinhanh = Button {
+var btnHinhanh = Button {/* for edit form*/
             text: "Browse"
             action: btnChooseFile
         }
+/*BEGIN image for edit form*/
+var strUrlEdit = "";
+var imageEdit: Image;
+var iImageEdit = ImageView {
+            image: bind imageEdit
+            x: 10
+            y: 10
+            fitWidth: 125
+            fitHeight: 125
+            layoutX: 200
+            layoutY: 50
+        }
+/*END image for edit form*/
 var loaihang = Label {
             text: "Loai hang"
         };
@@ -208,7 +221,7 @@ var listYears = ChoiceBox {
             width: 200
             height: 50
         }
-var buttonSave = Button {
+var buttonSave = Button {/*Save for edit*/
             text: "Save"
             action: btnSave
         };
@@ -464,7 +477,8 @@ def stage = Stage {
                                         content: [
                                             hinhanh,
                                             txtHinhanh,
-                                            btnHinhanh
+                                            btnHinhanh,
+                                            iImageEdit
                                         ]
                                     },
                                     HBox {
@@ -573,16 +587,21 @@ function btnDelete(): Void {
     var result: Boolean = Alert.question("Bạn có muốn xóa mặt hàng này?");
 }
 
-function btnChooseFile(): Void {
+function btnChooseFile(): Void {/* for edit form*/
     var filePath: String = ChooseFile.OpenChooser();
     txtHinhanh.text = filePath;
+
+    strUrlEdit = "file:/{filePath}";
+    imageEdit = Image {
+                url: strUrlEdit;
+            }
 }
 
 function btnReset(): Void {
     LoadDataForEditForm(EditingStockDTO);
 }
 
-function btnSave(): Void {
+function btnSave(): Void {/*Save for edit*/
     SaveStock();
 }
 
@@ -753,10 +772,19 @@ function LoadDataForEditForm(stockDTO: StockDTO): Void {
     listMonths.select(Integer.valueOf(strMonth) - 1);
     listYears.select(Integer.valueOf(strYear) - 2000);
 
+    if (not "".equals(stockDTO.getFileName())) {
+        strUrlEdit = "file:/{com.datnt.utils.JCopy.GetSystemPath()}{stockDTO.getFileName()}";
+    } else {
+        strUrlEdit = "file:/{com.datnt.utils.JCopy.GetSystemPath()}no_image.jpg";
+    }
+    imageEdit = Image {
+                url: strUrlEdit;
+            }
+    txtHinhanh.text = "{stockDTO.getFileName()}";
 /*END prepare data for edit form*/
 }
 
-function SaveStock(): Void {
+function SaveStock(): Void {/*Save for edit*/
     var stockServices = new StockServices();
 
     var stockDTO = new StockDTO();
@@ -778,16 +806,27 @@ function SaveStock(): Void {
     stockDTO.setCr8_Date(cr8_date);
     stockDTO.setCategoryID(listCats.selectedIndex.intValue() + 1);
 
+    var i = txtHinhanh.text.indexOf("/");
+
+    println("-----txtHinhanh.text------------------ ooo{txtHinhanh.text}");
+    println("--------------------------------------------ppp{i}");
+    if (i > -1) {
+        stockDTO.setFileName(txtHinhanh.text);
+    } else {
+        stockDTO.setFileName("");
+    }
+    
     if (StockValidator.ValidateUpdateStockBean(stockDTO)) {
         if (stockServices.saveForUpdate(EditingStockDTO, stockDTO) > 0) {
+            /*reset the stockDTO after upload new file*/
             GetSelectedDetail(stockDTO);
-            strNote = "Thông báo: ĐÃ LƯU ĐƠN HÀNG";
-            println("Thông báo: ĐÃ LƯU ĐƠN HÀNG");
+            strNote = "Thông báo: ÐÃ LUU ÐON HÀNG";
+            println("Thông báo: ÐÃ LUU ÐON HÀNG");
         }
 
     } else {
-        strNote = "Thông báo: MẶT HÀNG KHÔNG HỢP LỆ";
-        println("Thông báo: MẶT HÀNG KHÔNG HỢP LỆ");
+        strNote = "Thông báo: M?T HÀNG KHÔNG H?P L?";
+        println("Thông báo: M?T HÀNG KHÔNG H?P L?");
         return;
     }
 
