@@ -41,32 +41,38 @@ var buttonViewNewScene = Button {
             layoutX: 655
             layoutY: 650
         }
-var buttonSearch = Button {
+var buttonSearch = Button {/*for viewall form*/
             text: "Tìm kiếm"
             action: btnSearch
             layoutX: 730
             layoutY: 650
         }
+var buttonCats = Button {/*for viewall form*/
+            text: "Danh mục"
+            action: btnCats
+            layoutX: 810
+            layoutY: 650
+        }
 var buttonViewEdit = Button {
-            text: "Edit Item"
+            text: "Chỉnh sửa"
             action: btnEdit
             layoutX: 900
             layoutY: 650
         }
 var buttonShowAll = Button {
-            text: "Show ViewAll"
+            text: "Xem danh sách"
             action: btnShowAll
             layoutX: 900
             layoutY: 650
         }
 var buttonShowAllofEdit = Button {
-            text: "Show ViewAll"
+            text: "Xem danh sách"
             action: btnShowAll
             layoutX: 900
             layoutY: 650
         }
 var buttonShowAllofViewNew = Button {
-            text: "Show ViewAll"
+            text: "Xem danh sách"
             action: btnShowAll
             layoutX: 900
             layoutY: 650
@@ -351,6 +357,7 @@ def stage = Stage {
                             buttonDelete,
                             buttonViewEdit,
                             buttonSearch,
+                            buttonCats,
                             buttonViewNewScene,
                             listItems,
                             listCatsShowAll,
@@ -562,7 +569,7 @@ function btnViewAddNew(): Void {
     loadMonthsAddNew();
 }
 
-function btnSearch(): Void {
+function btnSearch(): Void { /*for viewall form*/
     ShowAll = false;
     ViewNewScene = false;
     Search = true;
@@ -586,6 +593,10 @@ function btnShowAll(): Void {
 function btnDelete(): Void {
     var result: Boolean = Alert.question("Bạn có muốn xóa mặt hàng này?");
 }
+
+function btnCats(): Void {
+    var catsControl = new CatsControl();
+    }
 
 function btnChooseFile(): Void {/* for edit form*/
     var filePath: String = ChooseFile.OpenChooser();
@@ -808,8 +819,6 @@ function SaveStock(): Void {/*Save for edit*/
 
     var i = txtHinhanh.text.indexOf("/");
 
-    println("-----txtHinhanh.text------------------ ooo{txtHinhanh.text}");
-    println("--------------------------------------------ppp{i}");
     if (i > -1) {
         stockDTO.setFileName(txtHinhanh.text);
     } else {

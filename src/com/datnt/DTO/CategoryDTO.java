@@ -12,9 +12,20 @@ package com.datnt.DTO;
 public class CategoryDTO {
     private String name = "";
     private String description = "";
+    private int id = -1;
     
     public static String NAME="name";
     public static String DESCRIPTION="description";
+    public static String ID="id";
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
 
     public String getDescription() {
         return description;

@@ -6,6 +6,7 @@
 package com.datnt.services;
 
 import com.datnt.DAO.CategoryDAO;
+import com.datnt.DTO.CategoryDTO;
 
 /**
  *
@@ -25,4 +26,24 @@ public class CategoryServices {
 
         return daoLayer.GetCategoryName(id);
     }
+
+    public static CategoryDTO GetCategoryByName(String name){
+
+        CategoryDAO daoLayer = new CategoryDAO();
+
+        return daoLayer.GetCategoryByName(name);
+    }
+    public static int saveForAdd(CategoryDTO categoryDTO) {
+
+        CategoryDAO daoLayer = new CategoryDAO();
+
+        return daoLayer.saveForAdd(categoryDTO);
+    }
+    public static int saveForEdit(CategoryDTO oldCategoryDTO, CategoryDTO categoryDTO) {
+
+        CategoryDAO daoLayer = new CategoryDAO();
+
+        return daoLayer.saveForEdit(oldCategoryDTO,categoryDTO);
+    }
+
 }
