@@ -65,6 +65,8 @@ public class JCopy {
         try {
             filepath = new File(".").getCanonicalPath().replace("\\", "/") + "/images" + "/";
 
+            System.out.println("ooooooooooooooooo  ==  "+filepath);
+
             Calendar now = Calendar.getInstance();
             filepath = filepath + now.getTimeInMillis() + "_" + fileName;
         } catch (Exception e) {

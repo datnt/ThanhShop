@@ -11,7 +11,7 @@
     <resources>
         <j2se version="1.5+"/>
         <extension name="JavaFX Runtime" href="http://dl.javafx.com/1.3/javafx-rt.jnlp"/>
-        <jar href="ThanhShop.jar" main="true" size="161126"/>
+        <jar href="ThanhShop.jar" main="true" size="93670"/>
         <jar href="lib/mysql-connector-java-5.1.6-bin.jar" size="690484"/>
     </resources>
     <application-desc main-class="com.sun.javafx.runtime.main.Main" progress-class="com.javafx.progressbar.ProgressManager">

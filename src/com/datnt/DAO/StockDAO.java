@@ -21,6 +21,53 @@ import java.sql.Date;
  */
 public class StockDAO {
 
+    public int Delete(String stockName) {
+        int retVal = -1;
+
+        Connection conn = null;
+        PreparedStatement ptmt = null;
+        ResultSet rs = null;
+
+        try {
+            DatabaseUtils utils = new DatabaseUtils();
+            conn = utils.getConntection();
+            conn.setAutoCommit(false);
+
+            String sqlStock = "DELETE FROM STOCK_KEPING WHERE name=?";
+
+            ptmt = conn.prepareStatement(sqlStock, Statement.RETURN_GENERATED_KEYS);
+            ptmt.setString(1, stockName);
+
+            retVal = ptmt.executeUpdate();
+
+        } catch (Exception e) {
+            retVal = -1;
+            System.out.println("DELETE stock FAILED: " + e);
+        } finally {
+            try {
+                if (retVal > 0) {
+                    conn.commit();
+                } else {
+                    retVal = -1;
+                    conn.rollback();
+                }
+                conn.setAutoCommit(true);
+                if (rs != null) {
+                    rs.close();
+                }
+                if (ptmt != null) {
+                    ptmt.close();
+                }
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("FAILED WHEN COMMIT for DELETE: " + e);
+            }
+        }
+        return retVal;
+    }
+
     public void DeleteOldFile(String stockName) {
 
         StockDTO stockDTO = GetDetail(stockName);
@@ -63,11 +110,11 @@ public class StockDAO {
 
                 stock.setFileName(strTemp.split("/")[strTemp.split("/").length - 1]);
                 ptmt.setString(7, stock.getFileName());
-            }else {
+            } else {
                 ptmt.setString(7, EditingStockDTO.getFileName());/*Set the OLD NAME, because there is no new file*/
             }
 
-            
+
 
             stockid = ptmt.executeUpdate();
 

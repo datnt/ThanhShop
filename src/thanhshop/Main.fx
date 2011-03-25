@@ -591,12 +591,20 @@ function btnShowAll(): Void {
 }
 
 function btnDelete(): Void {
-    var result: Boolean = Alert.question("Bạn có muốn xóa mặt hàng này?");
+    var result: Boolean = Alert.question("Bạn có muốn xóa mặt hàng này ({listItems.selectedItem}) ?");
+    if (result) {
+        var status = StockServices.Delete(listItems.selectedItem as String);
+        if (status > -1) {
+            FindAllStock();
+        } else {
+        }
+        println('ket qua delete == {status}');
+    }
 }
 
 function btnCats(): Void {
     var catsControl = new CatsControl();
-    }
+}
 
 function btnChooseFile(): Void {/* for edit form*/
     var filePath: String = ChooseFile.OpenChooser();
@@ -824,7 +832,7 @@ function SaveStock(): Void {/*Save for edit*/
     } else {
         stockDTO.setFileName("");
     }
-    
+
     if (StockValidator.ValidateUpdateStockBean(stockDTO)) {
         if (stockServices.saveForUpdate(EditingStockDTO, stockDTO) > 0) {
             /*reset the stockDTO after upload new file*/

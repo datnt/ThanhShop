@@ -13,6 +13,13 @@ import com.datnt.DTO.StockDTO;
  */
 public class StockServices {
 
+
+    public static int Delete(String stockName) {
+        StockDAO daoLayer = new StockDAO();
+
+        return daoLayer.Delete(stockName);
+    }
+
     public int saveForAdd(StockDTO stockDTO) {
 
         StockDAO daoLayer = new StockDAO();
